@@ -1,7 +1,8 @@
 body {
     font-family: 'Garamond', serif;
-    background-image: url('background.jpeg'); /* Add your background image here */
+    background-image: url('background.jpeg');
     background-size: cover;
+    background-position: center;
     margin: 0;
     padding: 0;
 }
