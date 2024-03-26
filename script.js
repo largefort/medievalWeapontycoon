@@ -10,31 +10,28 @@ const upgradeBtn = document.getElementById('upgrade-btn');
 const buyNewWeaponBtn = document.getElementById('buy-new-weapon-btn');
 
 // Load game progress
-document.addEventListener('DOMContentLoaded', () => {
-    const request = window.indexedDB.open('weapon_tycoon_db', 1);
-    request.onerror = function(event) {
-        console.error("IndexedDB error:", event.target.error);
+function loadGameProgress() {
+    const savedData = localStorage.getItem('weapon_tycoon_data');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        weapons = data.weapons;
+        income = data.income;
+        productionUpgradeCost = data.productionUpgradeCost;
+        newWeaponCost = data.newWeaponCost;
+        updateDisplays();
+    }
+}
+
+// Save game progress
+function saveGameProgress() {
+    const data = {
+        weapons: weapons,
+        income: income,
+        productionUpgradeCost: productionUpgradeCost,
+        newWeaponCost: newWeaponCost
     };
-    request.onsuccess = function(event) {
-        const db = event.target.result;
-        const transaction = db.transaction(['game_data'], 'readonly');
-        const objectStore = transaction.objectStore('game_data');
-        const getRequest = objectStore.get(1);
-        getRequest.onerror = function(event) {
-            console.error("Error getting game data:", event.target.error);
-        };
-        getRequest.onsuccess = function(event) {
-            const data = event.target.result;
-            if (data) {
-                weapons = data.weapons;
-                income = data.income;
-                productionUpgradeCost = data.productionUpgradeCost;
-                newWeaponCost = data.newWeaponCost;
-                updateDisplays();
-            }
-        };
-    };
-});
+    localStorage.setItem('weapon_tycoon_data', JSON.stringify(data));
+}
 
 produceBtn.addEventListener('click', produceWeapon);
 upgradeBtn.addEventListener('click', upgradeProduction);
@@ -70,37 +67,9 @@ function buyNewWeapon() {
 function updateDisplays() {
     weaponCountDisplay.textContent = `Weapons: ${formatNumber(weapons)}`;
     incomeDisplay.textContent = `Income: $${formatNumber(income)}/s`;
+    saveGameProgress();
 }
 
-function collectIncome() {
-    weapons += income;
-    updateDisplays();
-}
-
-// Save game progress
-setInterval(() => {
-    const request = window.indexedDB.open('weapon_tycoon_db', 1);
-    request.onerror = function(event) {
-        console.error("IndexedDB error:", event.target.error);
-    };
-    request.onsuccess = function(event) {
-        const db = event.target.result;
-        const transaction = db.transaction(['game_data'], 'readwrite');
-        const objectStore = transaction.objectStore('game_data');
-        const putRequest = objectStore.put({
-            id: 1,
-            weapons: weapons,
-            income: income,
-            productionUpgradeCost: productionUpgradeCost,
-            newWeaponCost: newWeaponCost
-        });
-        putRequest.onerror = function(event) {
-            console.error("Error putting game data:", event.target.error);
-        };
-    };
-}, 10000); // Save every 10 seconds
-
-// Format large numbers
 function formatNumber(number) {
     if (number >= 1e9) return (number / 1e9).toFixed(2) + 'B';
     if (number >= 1e6) return (number / 1e6).toFixed(2) + 'M';
@@ -108,4 +77,13 @@ function formatNumber(number) {
     return number.toString();
 }
 
+function collectIncome() {
+    weapons += income;
+    updateDisplays();
+}
+
+// Load game progress on page load
+loadGameProgress();
+
+// Set interval to collect income
 setInterval(collectIncome, 1000);
