@@ -1,6 +1,6 @@
 body {
     font-family: 'Garamond', serif;
-    background-image: url('background.jpeg');
+    background-image: url('background.jpeg'); /* Add your background image here */
     background-size: cover;
     margin: 0;
     padding: 0;
@@ -30,13 +30,14 @@ body {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    background-color: rgba(128, 128, 128, 0.8);
+    background-color: #654321; /* Dark brown color for buttons */
     color: #fff;
     margin-right: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Text shadow for better visibility */
 }
 
 .button:hover {
-    background-color: rgba(100, 100, 100, 0.8);
+    background-color: #543b23; /* Darker brown color on hover */
 }
 
 p {
@@ -47,4 +48,6 @@ p {
 h1, h2 {
     text-align: center;
     color: #333;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Text shadow for headings */
 }
+
